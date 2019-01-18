@@ -90,13 +90,20 @@ public class ClientTest {
  
     }
   }
- 
+  public String sensorValue;
+
   public String execute(String cmd) {
-    System.out.println("cmd: " + cmd);
+	
+    
+	System.out.println("cmd: " + cmd);
     String[] tokens = cmd.split(" ");
     String[] command = tokens[1].split("X");    
-    
     if (tokens.length > 1 && tokens[0].equals("GET")) {
+    	distanceFront.fetchSample(sampleFront, 0);
+    	distanceLeft.fetchSample(sampleLeft, 0);
+    	distanceRight.fetchSample(sampleRight, 0);
+    	color.fetchSample(sampleColor, 0);
+    	sensorValue = "Dist F: " + sampleFront[0] + " Dist L: " + sampleLeft[0] + " Dist R: " + sampleRight[0] + " Color: " + sampleColor[0];
       if (tokens[1].equals("/Hello")) {
         Sound.beepSequenceUp();
       } else if (tokens[1].equals("/Goodbye")) {
@@ -120,27 +127,27 @@ public class ClientTest {
   		  pilot.rotate(rot);
       } else if(command[0].equals("/sensor")) {
     	  String value = command[1];
-    	  if(value == "front") {
+    	  if(value.equals("front")) {
     		  distanceFront.fetchSample(sampleFront, 0);
-    		  return "HTTP/1.1 200 OK\r\n\r\nOK\r\n" + sampleFront[0];
-    	  } if(value == "left") {
+    		  sensorValue = Float.toString(sampleFront[0]);
+    	  } else if(value.equals("left")) {
     		  distanceLeft.fetchSample(sampleLeft, 0);
-    		  return "HTTP/1.1 200 OK\r\n\r\nOK\r\n" + sampleLeft[0];
-    	  } if(value == "right") {
+    		  sensorValue = Float.toString(sampleLeft[0]);
+    	  } else if(value.equals("right")) {
     		  distanceRight.fetchSample(sampleRight, 0);
-    		  return "HTTP/1.1 200 OK\r\n\r\nOK\r\n" + sampleRight[0];
-    	  } if(value == "color") {
+    		  sensorValue = Float.toString(sampleRight[0]);
+    	  } else if(value.equals("color")) {
     		  color.fetchSample(sampleColor, 0);
-    		  return "HTTP/1.1 200 OK\r\n\r\nOK\r\n" + sampleColor[0];
-    	  } if(value == "all") {
+    		  sensorValue = String.valueOf(sampleColor[0]);
+    	  } else if(value.equals("all")) {
     		  distanceFront.fetchSample(sampleFront, 0);
     		  distanceLeft.fetchSample(sampleLeft, 0);
     		  distanceRight.fetchSample(sampleRight, 0);
     		  color.fetchSample(sampleColor, 0);
-    		  return "Dist F: " + sampleFront[0] + "Dist L: " + sampleLeft[0] + "Dist R: " + sampleRight[0] + "Color: " + sampleColor[0];
+    		  sensorValue = "Dist F: " + sampleFront[0] + " Dist L: " + sampleLeft[0] + " Dist R: " + sampleRight[0] + " Color: " + sampleColor[0];
     	  }
       }
-      return "HTTP/1.1 200 OK\r\n\r\nOK\r\n";
+      return "HTTP/1.1 200 OK\r\n\r\nOK\r\n " + sensorValue; 
     }
     return null;
   }
