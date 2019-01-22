@@ -13,6 +13,7 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -35,7 +36,31 @@ import lejos.robotics.geometry.Line;
 
 public class Gui extends javax.swing.JFrame {
 
-	public static void main(String[] args) throws InterruptedException {
+//	public static void main(String[] args) throws InterruptedException {
+//		Gui frame = new Gui();
+//
+//		JPanel panel = new JPanel();
+//
+//		frame.setTitle("Robot GUI");
+//		frame.setSize(750, 300);
+//		frame.setResizable(false);
+//		frame.setLocation(400, 150);
+//
+//		Object[] particleList = generateParticle(50);
+//		myDrawLine mDL = new myDrawLine(particleList);
+//		panel.add(mDL);
+//		frame.add(panel);
+//		
+//		frame.setVisible(true);
+////		TimeUnit.SECONDS.sleep(2);
+////		panel.remove(mDL);
+////		panel.add(new myDrawLine(generateParticle(100)));
+////		panel.repaint();
+////		panel.updateUI();
+////		frame.repaint();	
+//	}
+	
+	public Object[] buildGui(int particles) throws InterruptedException {
 		Gui frame = new Gui();
 
 		JPanel panel = new JPanel();
@@ -45,20 +70,46 @@ public class Gui extends javax.swing.JFrame {
 		frame.setResizable(false);
 		frame.setLocation(400, 150);
 
-		Object[] particleList = generateParticle(1000);
+		Object[] particleList = generateParticle(particles);
 		myDrawLine mDL = new myDrawLine(particleList);
 		panel.add(mDL);
 		frame.add(panel);
 		
 		frame.setVisible(true);
+		
+		return particleList;
 //		TimeUnit.SECONDS.sleep(2);
 //		panel.remove(mDL);
 //		panel.add(new myDrawLine(generateParticle(100)));
 //		panel.repaint();
 //		panel.updateUI();
-//		frame.repaint();
+//		frame.repaint();		
+	}
+	
+	public Object[] resetGui(Particle[] newParticleList) throws InterruptedException {
+		Gui frame = new Gui();
 
+		JPanel panel = new JPanel();
+
+		frame.setTitle("Robot GUI");
+		frame.setSize(750, 300);
+		frame.setResizable(false);
+		frame.setLocation(400, 150);
+
+		Object[] particleList = newParticleList;
+		myDrawLine mDL = new myDrawLine(particleList);
+		panel.add(mDL);
+		frame.add(panel);
 		
+		frame.setVisible(true);
+		
+		return particleList;
+//		TimeUnit.SECONDS.sleep(2);
+//		panel.remove(mDL);
+//		panel.add(new myDrawLine(generateParticle(100)));
+//		panel.repaint();
+//		panel.updateUI();
+//		frame.repaint();		
 	}
 
 	static Object[] generateParticle(int size) {
@@ -99,7 +150,7 @@ public class Gui extends javax.swing.JFrame {
 				}
 			}
 			if(collision == 0 ) {
-				particleList[particleWanted] = new Particle(x, y, rotation, 0.1);
+				particleList[particleWanted] = new Particle(x, y, rotation, 0.1, -1, -1, -1);
 				particleWanted++;
 			}
 
@@ -131,129 +182,51 @@ public class Gui extends javax.swing.JFrame {
 
 			// X Start, Y Start, X End, Y End
 			// X = <---------->
-//		g.setColor(Color.black);
 
-			Line2D line0 = new Line2D.Double(0, 50, 100, 50);
-			Line2D line1 = new Line2D.Double(100, 50, 100, 0);
-			Line2D line2 = new Line2D.Double(100, 0, 150, 0);
-			Line2D line3 = new Line2D.Double(150, 0, 150, 50);
-			Line2D line4 = new Line2D.Double(150, 50, 200, 50);
-			Line2D line5 = new Line2D.Double(200, 50, 200, 0);
-			Line2D line6 = new Line2D.Double(200, 0, 300, 0);
-			Line2D line7 = new Line2D.Double(300, 0, 300, 50);
-			Line2D line8 = new Line2D.Double(300, 50, 350, 50);
-			Line2D line9 = new Line2D.Double(350, 50, 350, 0);
-			Line2D line10 = new Line2D.Double(350, 0, 400, 0);
-			Line2D line11 = new Line2D.Double(400, 0, 400, 50);
-			Line2D line12 = new Line2D.Double(400, 50, 450, 50);
-			Line2D line13 = new Line2D.Double(450, 50, 450, 0);
-			Line2D line14 = new Line2D.Double(450, 0, 550, 0);
-			Line2D line15 = new Line2D.Double(550, 0, 550, 50);
-			Line2D line16 = new Line2D.Double(550, 50, 600, 50);
-			Line2D line17 = new Line2D.Double(600, 50, 600, 100);
-			Line2D line18 = new Line2D.Double(600, 100, 500, 100);
-			Line2D line19 = new Line2D.Double(500, 100, 500, 150);
-			Line2D line20 = new Line2D.Double(500, 150, 450, 150);
-			Line2D line21 = new Line2D.Double(450, 150, 450, 100);
-			Line2D line22 = new Line2D.Double(450, 100, 400, 100);
-			Line2D line23 = new Line2D.Double(400, 100, 400, 150);
-			Line2D line24 = new Line2D.Double(400, 150, 300, 150);
-			Line2D line25 = new Line2D.Double(300, 150, 300, 100);
-			Line2D line26 = new Line2D.Double(300, 100, 250, 100);
-			Line2D line27 = new Line2D.Double(250, 100, 250, 150);
-			Line2D line28 = new Line2D.Double(250, 150, 200, 150);
-			Line2D line29 = new Line2D.Double(200, 150, 200, 100);
-			Line2D line30 = new Line2D.Double(200, 100, 100, 100);
-			Line2D line31 = new Line2D.Double(100, 100, 100, 150);
-			Line2D line32 = new Line2D.Double(100, 150, 50, 150);
-			Line2D line33 = new Line2D.Double(50, 150, 50, 100);
-			Line2D line34 = new Line2D.Double(50, 100, 0, 100);
-			Line2D line35 = new Line2D.Double(0, 100, 0, 50);
-
-			ArrayList<Line2D> lines = new ArrayList();
-
-			lines.add(line0);
-			lines.add(line1);
-			lines.add(line2);
-			lines.add(line3);
-			lines.add(line4);
-			lines.add(line5);
-			lines.add(line6);
-			lines.add(line7);
-			lines.add(line8);
-			lines.add(line9);
-			lines.add(line10);
-			lines.add(line11);
-			lines.add(line12);
-			lines.add(line13);
-			lines.add(line14);
-			lines.add(line15);
-			lines.add(line16);
-			lines.add(line17);
-			lines.add(line18);
-			lines.add(line19);
-			lines.add(line20);
-			lines.add(line21);
-			lines.add(line22);
-			lines.add(line23);
-			lines.add(line24);
-			lines.add(line25);
-			lines.add(line26);
-			lines.add(line27);
-			lines.add(line28);
-			lines.add(line29);
-			lines.add(line30);
-			lines.add(line31);
-			lines.add(line32);
-			lines.add(line33);
-			lines.add(line34);
-			lines.add(line35);
 
 			g.setColor(Color.black);
-
-			for (Line2D lineX : lines) {
+			WorldGenerator world = new WorldGenerator();
+			for (Line2D lineX : world.getWorld()) {
 				((Graphics2D) g).draw(lineX);
 			}
+			
+			((Graphics2D) g).setStroke(new BasicStroke(4));
+			g.setColor(Color.YELLOW);
+			
+			g.drawLine(20, 75, 580, 75);
+
+			((Graphics2D) g).setStroke(new BasicStroke(1));
 
 			g.setColor(Color.RED);
 
 //        g.drawLine(13, 10, 13, 16);
 			for (Particle particle : (Particle[]) myParticleList) {
-
-				int orientationX = 0, orientationY = 0;
-
-				if (particle.getOrientation() < 22 && particle.getOrientation() > -22) {
-					orientationX = 0;
-					orientationY = -9;
-				} else if (particle.getOrientation() < 64 && particle.getOrientation() >= 22) {
-					orientationX = 6;
-					orientationY = -6;
-				} else if (particle.getOrientation() < 115 && particle.getOrientation() >= 64) {
-					orientationX = 9;
-					orientationY = 0;
-				} else if (particle.getOrientation() < 150 && particle.getOrientation() >= 115) {
-					orientationX = 6;
-					orientationY = 6;
-				} else if (particle.getOrientation() < 200 && particle.getOrientation() >= 150) {
-					orientationX = 0;
-					orientationY = 9;
-				} else if (particle.getOrientation() < 245 && particle.getOrientation() >= 200) {
-					orientationX = -6;
-					orientationY = 6;
-				} else if (particle.getOrientation() < 290 && particle.getOrientation() >= 245) {
-					orientationX = -9;
-					orientationY = 0;
-				} else if (particle.getOrientation() < 335 && particle.getOrientation() >= 290) {
-					orientationX = -6;
-					orientationY = -6;
-				} else if (particle.getOrientation() <= 360 && particle.getOrientation() >= 335) {
-					orientationX = 0;
-					orientationY = -9;
-				}
+				//Draw Particle 
+				if(particle.getWeight()>0.7)
+					g.setColor(new Color(255,0,0,255));
+				else
+					g.setColor(new Color(255,0,0,20));
 
 				g.drawOval(particle.getX(), particle.getY(), 6, 6);
-				g.drawLine(particle.getX() + 3, particle.getY() + 3, particle.getX() + orientationX,
-						particle.getY() + orientationY);
+				//Draw orientation Line
+				Line2D lineTest = new Line2D.Double(particle.getX() +3 , particle.getY() +3, particle.getX()+23, particle.getY()+3);
+				AffineTransform richtung = 
+				        AffineTransform.getRotateInstance(
+				            Math.toRadians(particle.getOrientation()), lineTest.getX1(), lineTest.getY1());
+			    ((Graphics2D) g).draw(richtung.createTransformedShape(lineTest));
+			    //Draw lines for right and left
+				Line2D lineTest2 = new Line2D.Double(particle.getX() +3 , particle.getY() +3, particle.getX()+13, particle.getY()+3);
+
+			    AffineTransform rechts = AffineTransform.getRotateInstance(
+			            Math.toRadians(particle.getOrientation()-90), lineTest.getX1(), lineTest.getY1());
+			    
+			    AffineTransform links = AffineTransform.getRotateInstance(
+			            Math.toRadians(particle.getOrientation()+90), lineTest.getX1(), lineTest.getY1());
+			    
+			    g.setColor(new Color(0,0,255,80));
+			    ((Graphics2D) g).draw(links.createTransformedShape(lineTest2));
+			    ((Graphics2D) g).draw(rechts.createTransformedShape(lineTest2));
+//			    g.setColor(Color.RED);
 				
 
 

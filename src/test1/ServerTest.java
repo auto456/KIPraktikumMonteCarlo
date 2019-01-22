@@ -19,7 +19,7 @@ public class ServerTest {
 
 		ServerTest http = new ServerTest();
 
-		http.drive(25);
+		http.drive(20);
 //		System.out.println("Testing 1 - Send Http GET request");
 //		http.sendGet();
 //		http.sendCommand();
@@ -136,52 +136,81 @@ public class ServerTest {
 		return response.toString();
 	}
 
-	private void drive(int distance) throws IOException {
-		String url = ip + "fahren" + "X" + distance;
-		sendUrl(url);
-		
-		String response = sendUrl(ip + "sensorXall");
-		String[] liste= response.split(" ");
-		Float distanceFront = Float.valueOf(liste[3]);
-		Float distanceLeft = Float.valueOf(liste[6]);
-	    Float distanceRight = Float.valueOf(liste[9]);
-	    Float color = Float.valueOf(liste[11]);
-		
-	    System.out.println("Distance L: "+ distanceLeft + " Distance R: "+ distanceRight + " Distance F: "+ distanceFront);
+	public void drive(int distance) throws IOException {
+		for (int i = 0; i<distance/10; i++) {
+			String url = ip + "fahren" + "X" + 10;
+			sendUrl(url);
 
-	    if(distanceLeft < 0.15) {
-	    	String url2 = ip + "rechtsX20";
-	    	sendUrl(url2);
-	    	String url3 = ip + "fahrenX20";
-	    	sendUrl(url3);
-	    	String url4 = ip + "linksX20";
-	    	sendUrl(url4);
-	    	String url5 = ip + "fahrenX-13";
-	    	sendUrl(url5);
-	    }
-	    if(distanceRight < 0.10) {
-	    	String url2 = ip + "linksX20";
-	    	sendUrl(url2);
-	    	String url3 = ip + "fahrenX20";
-	    	sendUrl(url3);
-	    	String url4 = ip + "rechtsX20";
-	    	sendUrl(url4);
-	    	String url5 = ip + "fahrenX-13";
-	    	sendUrl(url5);
-	    }
+			String response = sendUrl(ip + "sensorXall");
+			String[] liste = response.split(" ");
+			Float distanceFront = Float.valueOf(liste[3]);
+			Float distanceLeft = Float.valueOf(liste[6]);
+			Float distanceRight = Float.valueOf(liste[9]);
+			Float color = Float.valueOf(liste[11]);
+
+			System.out.println("Front " + distanceFront);
+			System.out.println("Colorcode " + color);
+
+			int count = 0;
+			while (color != 7) {
+				if (count < 6) {
+					url = ip + "linksX10";
+					sendUrl(url);
+					url = ip + "sensorXall";
+					liste = sendUrl(url).split(" ");
+					color = Float.valueOf(liste[11]);
+				} if(count ==6) {
+					url = ip + "rechtsX60";
+					sendUrl(url);
+					url = ip + "sensorXall";
+					liste = sendUrl(url).split(" ");
+					color = Float.valueOf(liste[11]);
+				}if(count >6) {
+					url = ip + "rechtsX10";
+					sendUrl(url);
+					url = ip + "sensorXall";
+					liste = sendUrl(url).split(" ");
+					color = Float.valueOf(liste[11]);
+				}
+				
+				count ++;
+			}
+
+//		    if(distanceLeft < 0.15) {
+//		    	String url2 = ip + "rechtsX20";
+//		    	sendUrl(url2);
+//		    	String url3 = ip + "fahrenX20";
+//		    	sendUrl(url3);
+//		    	String url4 = ip + "linksX20";
+//		    	sendUrl(url4);
+//		    	String url5 = ip + "fahrenX-13";
+//		    	sendUrl(url5);
+//		    }
+//		    if(distanceRight < 0.10) {
+//		    	String url2 = ip + "linksX20";
+//		    	sendUrl(url2);
+//		    	String url3 = ip + "fahrenX20";
+//		    	sendUrl(url3);
+//		    	String url4 = ip + "rechtsX20";
+//		    	sendUrl(url4);
+//		    	String url5 = ip + "fahrenX-13";
+//		    	sendUrl(url5);
+//		    }
+		}
+		
 	}
 
-	private void turnLeft(int angle) throws IOException {
+	public void turnLeft(int angle) throws IOException {
 		String url = ip + "links" + "X" + angle;
 		sendUrl(url);
 	}
 
-	private void turnRight(int angle) throws IOException {
+	public void turnRight(int angle) throws IOException {
 		String url = ip + "rechts" + "X" + angle;
 		sendUrl(url);
 	}
 
-	private void readSensor(String sensor) throws IOException {
+	public String readSensor(String sensor) throws IOException {
 		String url = "null";
 
 		if (sensor == "front") {
@@ -204,8 +233,9 @@ public class ServerTest {
 			url = ip + "sensor" + "X" + "all";
 		}
 
-		sendUrl(url);
+		return sendUrl(url);
 	}
+
 	public int[] arrayFunctionTest(int p) {
 
 		class Position {
@@ -234,7 +264,7 @@ public class ServerTest {
 			}
 
 		}
-		
+
 		Position[] posArray = new Position[13];
 
 		Position p0 = new Position(0, 0);
@@ -249,7 +279,7 @@ public class ServerTest {
 		Position p9 = new Position(1, 1);
 		Position p10 = new Position(1, 0);
 		Position p11 = new Position(0, 0);
-		
+
 		posArray[0] = p0;
 		posArray[1] = p1;
 		posArray[2] = p2;
@@ -262,9 +292,9 @@ public class ServerTest {
 		posArray[9] = p9;
 		posArray[10] = p10;
 		posArray[11] = p11;
-		
-		int[] myInt = {posArray[p].x, posArray[p].y};
-		
+
+		int[] myInt = { posArray[p].x, posArray[p].y };
+
 		return myInt;
 	}
 }
