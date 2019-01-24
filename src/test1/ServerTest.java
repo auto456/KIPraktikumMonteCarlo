@@ -39,8 +39,8 @@ public class ServerTest {
 		con.setRequestProperty("User-Agent", USER_AGENT);
 
 		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
+//		System.out.println("\nSending 'GET' request to URL : " + url);
+//		System.out.println("Response Code : " + responseCode);
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
@@ -52,12 +52,12 @@ public class ServerTest {
 		in.close();
 
 		// print result
-		System.out.println(response.toString());
+//		System.out.println(response.toString());
 
 	}
 
 	private void sendCommand() throws IOException {
-		System.out.println("Command eingeben. (fahren=0, links=1, rechts=2, sensor=3)");
+//		System.out.println("Command eingeben. (fahren=0, links=1, rechts=2, sensor=3)");
 		Scanner sc = new Scanner(System.in);
 		int cmd = sc.nextInt();
 		int wert;
@@ -93,8 +93,8 @@ public class ServerTest {
 		con.setRequestProperty("User-Agent", USER_AGENT);
 
 		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
+//		System.out.println("\nSending 'GET' request to URL : " + url);
+//		System.out.println("Response Code : " + responseCode);
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
@@ -106,7 +106,7 @@ public class ServerTest {
 		in.close();
 
 		// print result
-		System.out.println(response.toString());
+//		System.out.println(response.toString());
 	}
 
 	private String sendUrl(String url) throws IOException {
@@ -120,8 +120,8 @@ public class ServerTest {
 		con.setRequestProperty("User-Agent", USER_AGENT);
 
 		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
+//		System.out.println("\nSending 'GET' request to URL : " + url);
+//		System.out.println("Response Code : " + responseCode);
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 		String inputLine;
@@ -136,7 +136,20 @@ public class ServerTest {
 		return response.toString();
 	}
 
-	public void drive(int distance) throws IOException {
+	public int[] drive(int distance) throws IOException {
+		float myDistance = 0;
+		int restDistance;
+		if(distance < 10) {
+			restDistance = distance;
+		} else {
+			myDistance = distance /10;
+			restDistance = (int) (distance - myDistance*10); 
+		}
+		System.out.println("distance is : " + distance);
+		System.out.println("my distance is : " + myDistance);
+		System.out.println("rest distance is : " + restDistance);
+
+		int[] returnInt = new int[2];
 		for (int i = 0; i<distance/10; i++) {
 			String url = ip + "fahren" + "X" + 10;
 			sendUrl(url);
@@ -148,8 +161,8 @@ public class ServerTest {
 			Float distanceRight = Float.valueOf(liste[9]);
 			Float color = Float.valueOf(liste[11]);
 
-			System.out.println("Front " + distanceFront);
-			System.out.println("Colorcode " + color);
+//			System.out.println("Front " + distanceFront);
+//			System.out.println("Colorcode " + color);
 
 			int count = 0;
 			while (color != 7) {
@@ -171,33 +184,27 @@ public class ServerTest {
 					url = ip + "sensorXall";
 					liste = sendUrl(url).split(" ");
 					color = Float.valueOf(liste[11]);
+//					System.out.println("count is: " + count);
+				} if(count > 12) {
+					url = ip + "rechtsX140";
+					sendUrl(url);
+					url = ip + "sensorXall";
+					liste = sendUrl(url).split(" ");
+					color = Float.valueOf(liste[11]);
+					returnInt[0]=1; 
+					returnInt[1]=i*10;
+					return returnInt;
 				}
-				
 				count ++;
 			}
-
-//		    if(distanceLeft < 0.15) {
-//		    	String url2 = ip + "rechtsX20";
-//		    	sendUrl(url2);
-//		    	String url3 = ip + "fahrenX20";
-//		    	sendUrl(url3);
-//		    	String url4 = ip + "linksX20";
-//		    	sendUrl(url4);
-//		    	String url5 = ip + "fahrenX-13";
-//		    	sendUrl(url5);
-//		    }
-//		    if(distanceRight < 0.10) {
-//		    	String url2 = ip + "linksX20";
-//		    	sendUrl(url2);
-//		    	String url3 = ip + "fahrenX20";
-//		    	sendUrl(url3);
-//		    	String url4 = ip + "rechtsX20";
-//		    	sendUrl(url4);
-//		    	String url5 = ip + "fahrenX-13";
-//		    	sendUrl(url5);
-//		    }
 		}
 		
+		String url = ip + "fahren" + "X" + restDistance;
+		sendUrl(url);	
+		
+		returnInt[0]=0; 
+		returnInt[1]=0;
+		return returnInt;
 	}
 
 	public void turnLeft(int angle) throws IOException {
