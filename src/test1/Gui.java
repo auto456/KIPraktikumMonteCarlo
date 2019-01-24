@@ -49,6 +49,7 @@ public class Gui extends javax.swing.JFrame {
 		Particle[] particleList = new Particle[1];
 		particleList[0] = p;
 		myDrawLine mDL = new myDrawLine(particleList);
+		
 		panel.add(mDL);
 		frame.add(panel);
 
@@ -63,12 +64,13 @@ public class Gui extends javax.swing.JFrame {
 		JPanel panel = new JPanel();
 
 		frame.setTitle("Robot GUI");
-		frame.setSize(750, 600);
+		frame.setSize(600, 200);
 		frame.setResizable(false);
 		frame.setLocation(400, 150);
 
 		Object[] particleList = generateParticle(particles);
 		myDrawLine mDL = new myDrawLine(particleList);
+
 		panel.add(mDL);
 		frame.add(panel);
 		frame.setVisible(true);
@@ -76,34 +78,33 @@ public class Gui extends javax.swing.JFrame {
 		return particleList;
 	}
 
-	public Particle[] resetGui(Particle[] newParticleList, int turn) {
-		Gui frame = new Gui();
-
-		JPanel panel = new JPanel();
-
-		frame.setTitle("Robot GUI");
-		frame.setSize(750, 600);
-		frame.setResizable(false);
-		frame.setLocation(400, 150);
-
-		Object[] particleList = newParticleList;
-		Particle[] cleanList = generateParticle(particleList.length, (Particle[]) particleList);
-
-		myDrawLine mDL = new myDrawLine(cleanList);
-		panel.add(mDL);
-		frame.add(panel);
-
-		frame.setVisible(true);
-
-		return (Particle[]) particleList;
-//		TimeUnit.SECONDS.sleep(2);
-//		panel.remove(mDL);
-//		panel.add(new myDrawLine(generateParticle(100)));
-//		panel.repaint();
-//		panel.updateUI();
-//		frame.repaint();		
-
-	}
+//	public Particle[] resetGui(Particle[] newParticleList, int turn) {
+//		Gui frame = new Gui();
+//
+//		JPanel panel = new JPanel();
+//
+//		frame.setTitle("Robot GUI");
+//		frame.setSize(750, 600);
+//		frame.setResizable(false);
+//		frame.setLocation(400, 150);
+//
+//		Object[] particleList = newParticleList;
+////		Particle[] cleanList = generateParticle(particleList.length, (Particle[]) particleList);
+//		myDrawLine mDL = new myDrawLine(cleanList);
+//		panel.add(mDL);
+//		frame.add(panel);
+//
+//		frame.setVisible(true);
+//
+//		return (Particle[]) particleList;
+////		TimeUnit.SECONDS.sleep(2);
+////		panel.remove(mDL);
+////		panel.add(new myDrawLine(generateParticle(100)));
+////		panel.repaint();
+////		panel.updateUI();
+////		frame.repaint();		
+//
+//	}
 
 	public Object[] resetGui(Particle[] newParticleList) throws InterruptedException {
 		Gui frame = new Gui();
@@ -111,14 +112,17 @@ public class Gui extends javax.swing.JFrame {
 		JPanel panel = new JPanel();
 
 		frame.setTitle("Robot GUI");
-		frame.setSize(750, 600);
+		frame.setSize(600, 200);
 		frame.setResizable(false);
 		frame.setLocation(400, 150);
 
 		Object[] particleList = newParticleList;
-		Particle[] cleanList = generateParticle(particleList.length, (Particle[]) particleList);
+		Particle[] cleanList = resampleParticles((Particle[]) particleList);
+//		cleanList = generateParticle(cleanList.length, (Particle[]) cleanList);
 		myDrawLine mDL = new myDrawLine(cleanList);
+		
 		panel.add(mDL);
+
 		frame.add(panel);
 
 		frame.setVisible(true);
@@ -132,9 +136,96 @@ public class Gui extends javax.swing.JFrame {
 //		frame.repaint();		
 	}
 
-	private Particle[] generateParticle(int length, Particle[] particleList) {
-		Particle[] cleanList = new Particle[length];
+	private Particle[] resampleParticles(Particle[] particleList) {
+//		System.out.println("Start Resampling");
+		Random r = new Random();
+		Particle[] p3 = new Particle[particleList.length];
+		int p3Index = 0;
+		int index = r.nextInt(particleList.length);
+		double beta = 0.0;
+		double mw = 0.0;
+		for (Particle p : particleList) {
+			if (p.getWeight() >= mw) {
+				mw = p.getWeight();
+			}
+		}
+		int neueListeCounter = 0;
+		while (neueListeCounter < particleList.length) {
+			Rectangle rMid = new Rectangle(0, 70, 600, 10);
 
+			beta += r.nextFloat() * 2 * mw;
+			while (beta > particleList[index].getWeight()) {
+				beta -= particleList[index].getWeight();
+				index = (index + 1) % particleList.length;
+			}
+				Particle pCopy = particleList[index];
+				p3[p3Index] = new Particle(pCopy.getX(), pCopy.getY(), pCopy.getOrientation(), pCopy.getWeight(), pCopy.getSensorFront(), pCopy.getSensorLeft(), pCopy.getSensorRight());
+				p3Index++;
+				neueListeCounter++;
+		}
+//		System.out.println("Resampling done!");
+		double weightOld = 0;
+		double weigthNew = 0;
+		for(Particle p: particleList) {
+			weightOld += p.getWeight();
+		}
+		
+		for(Particle p: p3) {
+			weigthNew += p.getWeight();
+		}
+		System.out.println("Altes gewicht: " + weightOld);
+		System.out.println("Neues gewicht: " + weigthNew);
+
+		return p3;
+	}
+//	private Particle[] resampleParticles(Particle[] particleList) {
+//		System.out.println("Start Resampling");
+//		Random r = new Random();
+//		Particle[] p3 = new Particle[particleList.length];
+//		int p3Index = 0;
+//		int index = r.nextInt(particleList.length);
+//		double beta = 0.0;
+//		double mw = 0.0;
+//		for (Particle p : particleList) {
+//			if (p.getWeight() >= mw) {
+//				mw = p.getWeight();
+//			}
+//		}
+//		int neueListeCounter = 0;
+//		while (neueListeCounter < particleList.length) {
+//			Rectangle rMid = new Rectangle(0, 70, 600, 10);
+//
+//			beta += r.nextFloat() * 2 * mw;
+//			while (beta > particleList[index].getWeight()) {
+//				beta -= particleList[index].getWeight();
+//				index = (index + 1) % particleList.length;
+//			}
+//			if (rMid.intersects(particleList[index].getX(), particleList[index].getY(), 6,
+//					6) == true) {
+//				Particle pCopy = particleList[index];
+//				p3[p3Index] = new Particle(pCopy.getX(), pCopy.getY(), pCopy.getOrientation(), pCopy.getWeight(), pCopy.getSensorFront(), pCopy.getSensorLeft(), pCopy.getSensorRight());
+//				p3Index++;
+//				neueListeCounter++;
+//			}
+//		}
+//		System.out.println("Resampling done!");
+//		double weightOld = 0;
+//		double weigthNew = 0;
+//		for(Particle p: particleList) {
+//			weightOld += p.getWeight();
+//		}
+//		
+//		for(Particle p: p3) {
+//			weigthNew += p.getWeight();
+//		}
+//		System.out.println("Altes gewicht: " + weightOld);
+//		System.out.println("Neues gewicht: " + weigthNew);
+//
+//		return p3;
+//	}
+
+	private Particle[] generateParticle(int length, Particle[] particleList) {
+		ArrayList<Particle> cleanArrayList = new ArrayList<Particle>();
 		Rectangle rMid = new Rectangle(0, 65, 600, 20);
 
 		Random r = new Random();
@@ -142,20 +233,15 @@ public class Gui extends javax.swing.JFrame {
 			int collision = 1;
 			Rectangle rCur = rMid;
 			if (rCur.intersects(particleList[i].getX(), particleList[i].getY(), 6, 6) == true) {
-				cleanList[i] = particleList[i];
-			} else {
-				do {
-					int x = r.nextInt(600);
-					int y = r.nextInt(150);
-					int rotation = r.nextInt(2);
-					cleanList[i] = new Particle(x, y, rotation * 180, 1, -1, -1, -1);
-				} while (rCur.intersects(cleanList[i].getX(), cleanList[i].getY(), 6, 6) == false);
-			}
+				cleanArrayList.add(particleList[i]);
+			} 
 
 		}
-
+		Particle[] cleanList = new Particle[cleanArrayList.size()];
+		for(int i = 0; i<cleanArrayList.size(); i++) {
+			cleanList[i] = cleanArrayList.get(i);
+		}
 		return cleanList;
-
 	}
 
 	static Object[] generateParticle(int size) {
@@ -170,13 +256,14 @@ public class Gui extends javax.swing.JFrame {
 			int y = r.nextInt(150);
 			int rotation = r.nextInt(2);
 			int collision = 1;
-				Rectangle rCur = rMid;
-				if (rCur.intersects(x, y, 6, 6) == true) {
-					collision = 0;
-				}
-			
+			Rectangle rCur = rMid;
+			if (rCur.intersects(x, y, 6, 6) == true) {
+				collision = 0;
+			}
+
 			if (collision == 0) {
-				particleList[particleWanted] = new Particle(x, y, rotation * 180, 1, -1, -1, -1);
+				particleList[particleWanted] = new Particle(x, y, rotation * 180, 1, -1, -1,
+						-1);
 				particleWanted++;
 			}
 
@@ -200,12 +287,15 @@ class myDrawLine extends JPanel {
 				bestParticle = p;
 			}
 		}
+		
+		System.out.println("Best Particle Weight: " + max);
+
 		myParticleList = particleList;
 	}
 
 	public Dimension getPreferredSize() {
 
-		return new Dimension(750, 300);
+		return new Dimension(600, 200);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -234,9 +324,11 @@ class myDrawLine extends JPanel {
 		for (Particle particle : (Particle[]) myParticleList) {
 			if (bestParticle == particle) {
 				g.setColor(new Color(0, 255, 0, (int) (particle.getWeight() * 255)));
-				((Graphics2D) g).setStroke(new BasicStroke(1.2f));
+//				g.setColor(new Color(255, 0, 0));
+				((Graphics2D) g).setStroke(new BasicStroke(2f));
 			} else {
 				g.setColor(new Color(255, 0, 0, (int) (particle.getWeight() * 255)));
+//				g.setColor(new Color(255, 0, 0));
 				((Graphics2D) g).setStroke(new BasicStroke(1));
 			}
 			// Draw Particle
@@ -261,6 +353,8 @@ class myDrawLine extends JPanel {
 						Math.toRadians(particle.getOrientation() + 90), lineTest.getX1(), lineTest.getY1());
 
 				g.setColor(new Color(0, 0, 255, (int) (particle.getWeight() * 255)));
+//				g.setColor(new Color(0, 0, 255));
+
 				((Graphics2D) g).draw(links.createTransformedShape(lineTest2));
 				((Graphics2D) g).draw(rechts.createTransformedShape(lineTest2));
 //			    g.setColor(Color.RED);

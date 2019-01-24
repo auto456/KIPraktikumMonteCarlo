@@ -145,9 +145,9 @@ public class ServerTest {
 			myDistance = distance /10;
 			restDistance = (int) (distance - myDistance*10); 
 		}
-		System.out.println("distance is : " + distance);
-		System.out.println("my distance is : " + myDistance);
-		System.out.println("rest distance is : " + restDistance);
+//		System.out.println("distance is : " + distance);
+//		System.out.println("my distance is : " + myDistance);
+//		System.out.println("rest distance is : " + restDistance);
 
 		int[] returnInt = new int[2];
 		for (int i = 0; i<distance/10; i++) {
@@ -186,7 +186,7 @@ public class ServerTest {
 					color = Float.valueOf(liste[11]);
 //					System.out.println("count is: " + count);
 				} if(count > 12) {
-					url = ip + "rechtsX140";
+					url = ip + "rechtsX105";
 					sendUrl(url);
 					url = ip + "sensorXall";
 					liste = sendUrl(url).split(" ");

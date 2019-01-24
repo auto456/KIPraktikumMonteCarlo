@@ -15,53 +15,43 @@ public class Main {
 		WorldGenerator world = new WorldGenerator();
 		ServerTest http = new ServerTest();
 
-		Particle[] pl = (Particle[]) myGui.buildGui(10);
-		
-//		for (int i = 0; i < 50; i++) {
-//			nextStep(http, pl, world);
-//			myGui.resetGui(pl);
-//		}
+		// Erstelle neue GUI mit Partikelanzahl
+		Particle[] pl = (Particle[]) myGui.buildGui(10000);
+
+		// Monte Carlo
+		for (int i = 0; i < 50; i++) {
+			nextStep(http, pl, world, i);
+			// Gui aktualisieren
+			pl = (Particle[]) myGui.resetGui(pl);
+		}
 	}
 
-	public static void nextStep(ServerTest roboServer, Particle[] pList, WorldGenerator world) throws IOException {
+	public static void nextStep(ServerTest roboServer, Particle[] pList, WorldGenerator world, int count)
+			throws IOException {
 		Random r = new Random();
 		Particle[] newPList;
 		int driveDistance = r.nextInt(100);
 
-		System.out.println("distance is: " + driveDistance);
+		System.out.println("Distance is: " + driveDistance);
 		int turn[] = roboServer.drive(driveDistance);
 		if (turn[0] == 1) {
 			for (Particle p : pList) {
 				p.setOrientation(p.getOrientation() + 180);
 			}
 		}
-		System.out.println("driveDistance is: " + turn[1]);
-
 		float[] sensor = sensorOut(roboServer.readSensor("all"));
-		System.out.println("Sensor front is: " + sensor[0]);
-		System.out.println("Sensor left is: " + sensor[1]);
-		System.out.println("Sensor right is: " + sensor[2]);
 		newPList = berechneNeuePosition(pList, driveDistance);
 		newPList = berechneSchnittpunkt(newPList, world.getWorld());
-
 		for (Particle pa : newPList) {
-			System.out.println(pa.getSensorRight());
-			System.out.println(sensor[2]);
-			float gewichtLeft = pa.getSensorLeft() - sensor[1];
-//			if ((pa.getSensorLeft() > sensor[1] - 7 && pa.getSensorLeft() < sensor[1] + 7)
-//					&& (pa.getSensorRight() > sensor[2] - 7 && pa.getSensorRight() < sensor[2] + 7)) {
-//				if ((pa.getWeight() + 0.2) >= 1)
-//					pa.setWeight(1);
-//				else
-//					pa.setWeight(pa.getWeight() + 0.2);
-//
-//				System.out.println("Found");
-//			} else {
-//				if ((pa.getWeight() - 0.2) <= 0)
-//					pa.setWeight(0);
-//				else
-//					pa.setWeight(pa.getWeight() - 0.2);
-//			}
+
+			float diffLeft = Math.abs((float) pa.getSensorLeft() / (float) 85 - (float) sensor[1] / (float) 85);
+			float diffRight = Math.abs((float) pa.getSensorRight() / (float) 85 - (float) sensor[2] / (float) 85);
+
+			double weightLeft = calculateWeight(diffLeft);
+			double weightRight = calculateWeight(diffRight);
+			double weightTotal = weightLeft * weightRight;
+
+			pa.setWeight(weightTotal);
 		}
 	}
 
@@ -152,12 +142,16 @@ public class Main {
 						pl.setSensorRight(pixelLength);
 						right = 1;
 					}
-
 				}
 			}
 		}
 
 		return pList;
 
+	}
+
+	public static double calculateWeight(double sensor) {
+//		return 1-sensor;
+		return 1 / Math.exp(3 * Math.pow(sensor, 2));
 	}
 }
