@@ -16,7 +16,7 @@ public class Main {
 		ServerTest http = new ServerTest();
 
 		// Erstelle neue GUI mit Partikelanzahl
-		Particle[] pl = (Particle[]) myGui.buildGui(10000);
+		Particle[] pl = (Particle[]) myGui.buildGui(3000);
 
 		// Monte Carlo
 		for (int i = 0; i < 50; i++) {
@@ -30,18 +30,34 @@ public class Main {
 			throws IOException {
 		Random r = new Random();
 		Particle[] newPList;
+		
 		int driveDistance = r.nextInt(100);
 
 		System.out.println("Distance is: " + driveDistance);
+		//Roboter mit zufälliger Distanz fahren
 		int turn[] = roboServer.drive(driveDistance);
+		//Falls gedreht, auch Partikel drehen
 		if (turn[0] == 1) {
+			//Neue Position der Partikel berechnen, aufgrund der gefahrenen Distanz
+			newPList = berechneNeuePosition(pList, turn[1]);
+			System.out.println("Ich bin leider nur " + turn[1] + " gefahren :(((");
+			//Sensorwerte der Partikel berechnen
+			newPList = berechneSchnittpunkt(newPList, world.getWorld());
 			for (Particle p : pList) {
 				p.setOrientation(p.getOrientation() + 180);
 			}
+			
+		} else {			
+			//Neue Position der Partikel berechnen, aufgrund der gefahrenen Distanz
+			newPList = berechneNeuePosition(pList, driveDistance);
+			//Sensorwerte der Partikel berechnen
+			newPList = berechneSchnittpunkt(newPList, world.getWorld());			
 		}
+		
+		//Sensoren auslesen
 		float[] sensor = sensorOut(roboServer.readSensor("all"));
-		newPList = berechneNeuePosition(pList, driveDistance);
-		newPList = berechneSchnittpunkt(newPList, world.getWorld());
+		
+		//Gewichtungen festlegen
 		for (Particle pa : newPList) {
 
 			float diffLeft = Math.abs((float) pa.getSensorLeft() / (float) 85 - (float) sensor[1] / (float) 85);
@@ -151,7 +167,7 @@ public class Main {
 	}
 
 	public static double calculateWeight(double sensor) {
-//		return 1-sensor;
-		return 1 / Math.exp(3 * Math.pow(sensor, 2));
+		return 1-sensor;
+//		return 1 / Math.exp(3 * Math.pow(sensor, 2));
 	}
 }
